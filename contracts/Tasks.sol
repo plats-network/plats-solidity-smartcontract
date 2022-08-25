@@ -38,6 +38,9 @@ contract Tasks is Ownable{
         platTokens = platTokens_;
     }
 
+    function setPlatToken(IERC20 platToken_) public onlyOwner{
+        platTokens = platToken_;
+    }
 
     function createCampaign(uint256 value) public {
         uint256 newCampaignIndex = campaignIndex.current();
@@ -57,9 +60,8 @@ contract Tasks is Ownable{
         emit CreateCampaign(msg.sender, value);
     }
 
-    function payment(uint256 index, address[] memory users, uint256 amount) public {
+    function payment(uint256 index, address[] memory users, uint256 amount) public onlyOwner{
         CampaignStorage memory campaignInfo = campaigns[index];
-        require(msg.sender == campaignInfo.creator, "Tasks: Permission Deny!! Only creator can call");
         uint256 totalAmount = amount.mul(users.length);
         require(campaignInfo.balance >= totalAmount, "Tasks: Not enough balance");
         // risk here

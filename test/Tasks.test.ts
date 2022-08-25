@@ -48,7 +48,7 @@ describe("Tasks", function () {
         await tasks.connect(client).createCampaign(depositValue);
 
         var balanceOfAliceBeforePayment = await token.balanceOf(alice.address);
-        await tasks.connect(client).payment(0, [alice.address, bob.address], utils.parseEther("10"));
+        await tasks.connect(deployer).payment(0, [alice.address, bob.address], utils.parseEther("10"));
         var balanceOfAliceAfterPayment = await token.balanceOf(alice.address);
         expect(balanceOfAliceAfterPayment).to.be.eq(balanceOfAliceBeforePayment.add(utils.parseEther("10")));
 

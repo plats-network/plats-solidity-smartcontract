@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract Tasks is Ownable{
-    using Counters for Counters.Counter;
     using SafeMath for uint256;
 
     // Counter for campaign index
@@ -23,14 +22,15 @@ contract Tasks is Ownable{
         uint256 balance;
         bool isEnd;
     }
-    mapping(uint256 => CampaignStorage) public campaigns;
+    mapping(string => CampaignStorage) public campaigns;
 
-    mapping(address => uint256[]) public clientCampaigns;
+    mapping(address => string[]) public clientCampaigns;
 
     // events 
 
     event CreateCampaign(
         address indexed creator,
+        string indexed batchId,
         uint256 indexed balance
     );
 
@@ -42,26 +42,25 @@ contract Tasks is Ownable{
         platTokens = platToken_;
     }
 
-    function createCampaign(uint256 value) public {
-        uint256 newCampaignIndex = campaignIndex.current();
-        campaignIndex.increment();
+    function createCampaign(string memory batchId, uint256 value) public {
+        require(campaigns[batchId].creator == address(0), "Tasks: BatchId exited");
         require(platTokens.balanceOf(msg.sender) >= value, "Tasks: Not enough balance");
 
         // transfer plat to Tasks contract
         platTokens.transferFrom(msg.sender, address(this), value);
 
-        campaigns[newCampaignIndex] = CampaignStorage({
+        campaigns[batchId] = CampaignStorage({
             creator: msg.sender,
             balance: value,
             isEnd: false
         });
-        clientCampaigns[msg.sender].push(newCampaignIndex);
+        clientCampaigns[msg.sender].push(batchId);
 
-        emit CreateCampaign(msg.sender, value);
+        emit CreateCampaign(msg.sender, batchId,  value);
     }
 
-    function payment(uint256 index, address[] memory users, uint256 amount) public onlyOwner{
-        CampaignStorage memory campaignInfo = campaigns[index];
+    function payment(string memory batchId, address[] memory users, uint256 amount) public onlyOwner{
+        CampaignStorage memory campaignInfo = campaigns[batchId];
         uint256 totalAmount = amount.mul(users.length);
         require(campaignInfo.balance >= totalAmount, "Tasks: Not enough balance");
         // risk here

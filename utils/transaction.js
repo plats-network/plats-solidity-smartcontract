@@ -1,9 +1,9 @@
 
 const ethers = require('ethers');
 const platContractABI = require('../artifacts/contracts/Tasks.sol/Tasks.json')['abi'];
-const platContractAddress = "0x8CfcfA91EA0Ebe464AAcfaAC39578a29D2a0A767";
+const platContractAddress = "0x6E440d515E0ddE78de24245d57dF1790fA41eFc4";
 const tokenContractABI = require('../artifacts/contracts/PlatToken.sol/PlatToken.json')['abi'];
-const tokenContractAddress = "0xA33938565A1bFA52190f895E37FADb5725a677Bb";
+const tokenContractAddress = "0x0AE40ea79F109E7D78dDfaA366e1372c3A214ef0";
 
 const dotenv = require('dotenv');
 
@@ -26,10 +26,11 @@ async function main() {
     await tokenContract.connect(wallet).approve(platContract.address, depositValue);
 
     // create campaign
-    await platContract.connect(wallet).createCampaign(depositValue);
+    const batchId = "1"
+    await platContract.connect(wallet).createCampaign(batchId,depositValue);
 
     // get campaign info
-    let currentCampaignInfo = await platContract.campaigns(0);
+    let currentCampaignInfo = await platContract.campaigns(batchId);
     console.log(currentCampaignInfo);
 
     let balanceOfOwner = await tokenContract.balanceOf(wallet.address);

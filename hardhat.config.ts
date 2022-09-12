@@ -42,6 +42,7 @@ const config: HardhatUserConfig = {
       url: `https://eth.bd.evmos.dev:8545`,
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      gasPrice: 5000000000000,
     },
     // bsc_testnet: {
     //   url:"https://data-seed-prebsc-1-s2.binance.org:8545/",
